@@ -1,0 +1,12 @@
+{
+  "name": "Madhuli Namkeen & Sweets",
+  "short_name": "Madhuli",
+  "description": "Handmade mithai and namkeen in pure peanut oil, fresh every morning — Nikol, Ahmedabad.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FACC15",
+  "icons": [
+    { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

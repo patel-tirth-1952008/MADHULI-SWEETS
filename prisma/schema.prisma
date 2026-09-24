@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  nameGu    String?
+  slug      String    @unique
+  icon      String    @default("🍬")
+  order     Int       @default(0)
+  isActive  Boolean   @default(true)
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  nameGu        String?
+  slug          String    @unique
+  description   String?
+  descriptionGu String?
+  price         Float
+  unit          String
+  category      Category  @relation(fields: [categoryId], references: [id])
+  categoryId    String    @db.ObjectId
+  image         String?
+  isAvailable   Boolean   @default(true)
+  isFeatured    Boolean   @default(false)
+  isBestseller  Boolean   @default(false)
+  tags          String[]
+  order         Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([categoryId])
+  @@index([isAvailable])
+}
+
+model Order {
+  id              String         @id @default(auto()) @map("_id") @db.ObjectId
+  orderId         String         @unique
+  customerName    String
+  customerPhone   String
+  customerAddress String?
+  landmark        String?
+  pincode         String?
+  items           OrderItem[]
+  subtotal        Float
+  deliveryFee     Float          @default(0)
+  total           Float
+  paymentMethod   String         @default("cod")
+  status          String         @default("pending")
+  orderType       String         @default("delivery")
+  deliverySlot    String         @default("asap")
+  notes           String?
+  statusHistory   StatusUpdate[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+type OrderItem {
+  productId   String
+  name        String
+  quantity    Float
+  unit        String
+  priceAtTime Float
+  subtotal    Float
+}
+
+type StatusUpdate {
+  status String
+  time   DateTime
+}
+
+model Admin {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  username  String   @unique
+  password  String
+  role      String   @default("superadmin")
+  createdAt DateTime @default(now())
+}
+
+model Settings {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  shopName           String   @default("Madhuli Namkeen & Sweets")
+  shopNameGu         String   @default("માધુલી નમકીન એન્ડ સ્વીટ્સ")
+  phones             String[]
+  address            String   @default("Shop No. 17-18, Ishwar Icon, near Jivan Twins Bungalow, Nikol, Ahmedabad 382350")
+  instagram          String   @default("madhulinamkeen_sweets2022")
+  deliveryRadius     Int      @default(5)
+  minOrder           Float    @default(100)
+  deliveryFee        Float    @default(30)
+  freeDeliveryAbove  Float    @default(500)
+  isOpen             Boolean  @default(true)
+  operatingHours     String   @default("{\"mon\":\"09:00-21:00\",\"tue\":\"09:00-21:00\",\"wed\":\"09:00-21:00\",\"thu\":\"09:00-21:00\",\"fri\":\"09:00-21:00\",\"sat\":\"09:00-21:00\",\"sun\":\"10:00-18:00\"}")
+  contactEmail       String   @default("")
+  announcement       String?
+  announcementActive Boolean  @default(false)
+  updatedAt          DateTime @updatedAt
+}
+
+// Small extensions beyond the base schema (documented in README):
+// powers the dashboard "Activity Feed"
+model Activity {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  action    String
+  message   String
+  createdAt DateTime @default(now())
+}
+
+// powers the About-page testimonials (seeded)
+model Testimonial {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  text      String
+  textGu    String?
+  rating    Int      @default(5)
+  createdAt DateTime @default(now())
+}

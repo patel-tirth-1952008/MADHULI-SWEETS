@@ -1,0 +1,348 @@
+@import "tailwindcss";
+
+/* ─────────────────────────── Design tokens ─────────────────────────── */
+@theme {
+  /* backgrounds */
+  --color-cream: #fffdf7;
+  --color-warm: #fff9e6;
+  --color-ysoft: #fff3cc;
+  /* accents */
+  --color-jalebi: #facc15;
+  --color-gold: #eab308;
+  --color-golddark: #ca8a04;
+  --color-deepgold: #a16207;
+  /* text */
+  --color-ink: #1c1917;
+  --color-ink2: #57534e;
+  --color-mute: #a8a29e;
+  --color-cocoa: #422006;
+  /* borders */
+  --color-line: #f5f0e1;
+  --color-linemed: #e8dfc9;
+  /* semantic */
+  --color-ok: #22c55e;
+  --color-bad: #ef4444;
+  --color-warn: #f59e0b;
+
+  --shadow-warm: 0 4px 20px rgba(234, 179, 8, 0.08);
+  --shadow-card: 0 2px 12px rgba(28, 25, 23, 0.06);
+  --shadow-elevated: 0 8px 30px rgba(28, 25, 23, 0.1);
+}
+
+@theme inline {
+  --font-display: var(--font-playfair);
+  --font-body: var(--font-poppins);
+  --font-gu: var(--font-notoguj);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background: #ffffff;
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: var(--color-ysoft);
+    color: var(--color-cocoa);
+  }
+  input,
+  select,
+  textarea {
+    outline: none;
+  }
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: var(--color-gold) !important;
+    box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.25);
+  }
+}
+
+/* ─────────────────────────── Utilities ─────────────────────────── */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* 3D press effect for primary yellow buttons */
+.btn-press {
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background-color 0.15s ease;
+  box-shadow: 0 3px 0 var(--color-golddark);
+}
+.btn-press:hover {
+  background-color: var(--color-golddark);
+}
+.btn-press:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--color-golddark);
+}
+
+/* "Out of Stock" stamp */
+.stamp-text {
+  border: 3px solid var(--color-bad);
+  color: var(--color-bad);
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  border-radius: 8px;
+  transform: rotate(-12deg);
+  background: rgba(255, 255, 255, 0.65);
+}
+
+/* Blinking border for pending-orders card (dashboard) */
+@keyframes blink-border {
+  0%,
+  100% {
+    border-color: var(--color-jalebi);
+  }
+  50% {
+    border-color: #ffffff;
+  }
+}
+.blink-border {
+  animation: blink-border 1.2s ease-in-out infinite;
+}
+
+@keyframes soft-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(234, 179, 8, 0);
+  }
+}
+.pulse-dot {
+  animation: soft-pulse 1.6s ease-in-out infinite;
+}
+
+/* ─────────────────────── Opening door animation ─────────────────────── */
+.door-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--color-cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.door-stage {
+  position: relative;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+.door-glow {
+  position: absolute;
+  inset: -70px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(250, 204, 21, 0.95) 0%,
+    rgba(250, 204, 21, 0.4) 38%,
+    rgba(250, 204, 21, 0) 70%
+  );
+  filter: blur(6px);
+}
+.door-frame {
+  position: relative;
+  width: min(400px, 74vw);
+  height: min(600px, 66vh);
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 18px 34px rgba(120, 63, 4, 0.28));
+}
+.door-half {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: calc(50% + 2px);
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(90deg, rgba(56, 29, 10, 0.1) 0px, rgba(56, 29, 10, 0.1) 2px, transparent 2px, transparent 26px),
+    linear-gradient(180deg, #a9713b 0%, #8b5a2b 48%, #77451f 100%);
+  box-shadow: inset 0 0 48px rgba(30, 15, 5, 0.45);
+  border: 4px solid #5b3418;
+  backface-visibility: hidden;
+}
+.door-left {
+  left: 0;
+  transform-origin: left center;
+  border-right: 6px solid #45260f;
+}
+.door-right {
+  right: 0;
+  transform-origin: right center;
+  border-left: 6px solid #45260f;
+}
+.door-panel {
+  position: absolute;
+  left: 12%;
+  width: 76%;
+  border: 3px solid rgba(48, 24, 8, 0.55);
+  border-radius: 6px;
+  box-shadow:
+    inset 0 2px 6px rgba(255, 220, 150, 0.16),
+    inset 0 -3px 8px rgba(30, 12, 2, 0.35);
+  background: rgba(60, 30, 10, 0.12);
+}
+.door-handle {
+  position: absolute;
+  top: 50%;
+  width: 26px;
+  height: 26px;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 32% 30%, #ffe9a8, #d4a017 45%, #8a5a0a 90%);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  transform: translateY(-50%);
+}
+.door-left .door-handle {
+  right: 14px;
+}
+.door-right .door-handle {
+  left: 14px;
+}
+/* Text split across both door leaves — seamless when closed */
+.door-text {
+  position: absolute;
+  top: 15%;
+  width: 200%;
+  text-align: center;
+  pointer-events: none;
+  color: #fff6dc;
+  text-shadow: 0 2px 10px rgba(40, 18, 4, 0.55);
+}
+.door-left .door-text {
+  left: 0;
+}
+.door-right .door-text {
+  right: 0;
+}
+.door-threshold {
+  position: absolute;
+  bottom: -14px;
+  left: -8%;
+  width: 116%;
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #6b4423, #4a2c12);
+  box-shadow: 0 6px 14px rgba(60, 30, 5, 0.3);
+}
+.door-arch {
+  position: absolute;
+  top: -44px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 118%;
+  height: 74px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2px;
+  z-index: 5;
+}
+.arch-band {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  background: linear-gradient(180deg, #c08a35, #8a5a1a);
+  box-shadow: 0 3px 8px rgba(80, 45, 8, 0.25);
+}
+.toran-leaf {
+  display: block;
+  width: 13px;
+  height: 24px;
+  background: linear-gradient(180deg, #5aa02c, #2f6b18);
+  border-radius: 0 0 50% 50% / 0 0 62% 62%;
+}
+.toran-flower {
+  display: block;
+  width: 9px;
+  height: 9px;
+  margin-top: 2px;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 35% 30%, #ffd34d, #f59e0b 60%, #d97706);
+}
+.door-hint {
+  position: absolute;
+  bottom: 5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  color: var(--color-deepgold);
+  background: #fff;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  box-shadow: var(--shadow-card);
+  white-space: nowrap;
+}
+
+/* Mobile: single rolling shutter */
+.shutter-panel {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.16) 0 3px, transparent 3px 26px),
+    linear-gradient(180deg, #a9713b 0%, #8b5a2b 55%, #77451f 100%);
+  border: 6px solid #5b3418;
+  box-shadow: inset 0 0 48px rgba(30, 15, 5, 0.45);
+}
+.shutter-rail {
+  position: absolute;
+  bottom: 12px;
+  left: 6%;
+  right: 6%;
+  height: 18px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #d9b36a, #8a5a1a);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* Blur the app behind the closed door; release as it opens */
+.app-shell {
+  transition: filter 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+body.door-closed {
+  overflow: hidden;
+}
+body.door-closed .app-shell {
+  filter: blur(8px);
+}
+body.door-open .app-shell {
+  filter: blur(0);
+}
+
+/* ─────────────────────────── Print (order slip) ─────────────────────────── */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+  .print-area {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    overflow: visible;
+    background: #fff;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
